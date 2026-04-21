@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Dashboard de Ventas</title>
+    <style>
+        /* Este es un estilo opcional para centrar el dashboard */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- PEGA EL CÓDIGO DE POWER BI JUSTO AQUÍ -->
+    <iframe width="1140" height="541.25" src="https://app.powerbi.com/view?r=..." frameborder="0" allowFullScreen="true"></iframe>
+</body>
+</html>
