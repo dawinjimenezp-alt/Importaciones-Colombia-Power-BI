@@ -2,30 +2,412 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Dashboard Power BI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Dashboard Power BI | Analytics</title>
+    
+    <!-- Font Awesome 6 (iconos gratis) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts (fuentes modernas) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #fff;
         }
+
+        /* Header con efecto glassmorphism */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .title i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(102, 126, 234, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(102, 126, 234, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .badge i {
+            font-size: 0.75rem;
+            margin-right: 6px;
+        }
+
+        /* Contenedor del dashboard */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card que envuelve el iframe */
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Toolbar del dashboard */
+        .dashboard-toolbar {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .toolbar-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-btn:hover {
+            background: rgba(102, 126, 234, 0.5);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .info-text {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Contenedor del iframe */
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            min-height: 500px;
+            background: #1a1a2e;
+        }
+
         iframe {
             width: 100%;
             height: 100%;
             border: none;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Loader animado mientras carga el iframe */
+        .loader-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader {
+            text-align: center;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 2rem;
+        }
+
+        .footer p {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+        }
+
+        .footer a {
+            color: rgba(102, 126, 234, 0.8);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: #667eea;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            .title {
+                font-size: 1.5rem;
+            }
+            .dashboard-container {
+                padding: 1rem;
+            }
+            .iframe-wrapper {
+                height: 55vh;
+                min-height: 400px;
+            }
+            .toolbar-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            .info-text {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Efecto de brillo en los bordes */
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, #764ba2, transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .dashboard-card:hover::before {
+            opacity: 1;
+        }
+
+        .dashboard-card {
+            position: relative;
         }
     </style>
 </head>
 <body>
-    <!-- REEMPLAZA el src con TU enlace de Power BI -->
-    <iframe src="https://app.powerbi.com/view?r=eyJrIjoiMmUyNmNlNTQtOGViYS00ZDA0LTg3M2UtZmFlOWJmMDEzZTIwIiwidCI6ImVhNjQ5ZTUwLTI3ZDItNDMxOC05Y2I5LTJmY2ZmZTE2ZmQ0MSIsImMiOjR9" 
-            allowFullScreen="true">
-    </iframe>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="title">
+                <i class="fas fa-chart-line"></i>
+                Dashboard Analytics
+            </div>
+            <div class="subtitle">
+                <span><i class="fas fa-chart-pie"></i> Visualización de datos en tiempo real</span>
+                <span class="badge"><i class="fas fa-sync-alt"></i> Datos actualizados</span>
+                <span class="badge"><i class="fas fa-shield-alt"></i> Power BI Embedded</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <div class="dashboard-card">
+            <div class="dashboard-toolbar">
+                <div class="toolbar-buttons">
+                    <button class="tool-btn" id="fullscreenBtn">
+                        <i class="fas fa-expand"></i> Pantalla completa
+                    </button>
+                    <button class="tool-btn" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i> Refrescar
+                    </button>
+                </div>
+                <div class="info-text">
+                    <i class="fas fa-info-circle"></i> Interactúa con los gráficos - Los filtros son dinámicos
+                </div>
+            </div>
+            <div class="iframe-wrapper">
+                <div class="loader-overlay" id="loaderOverlay">
+                    <div class="loader">
+                        <div class="loader-spinner"></div>
+                        <p>Cargando dashboard...</p>
+                    </div>
+                </div>
+                <!-- 🔴 REEMPLAZA EL src CON TU ENLACE DE POWER BI 🔴 -->
+                <iframe id="powerBiFrame" 
+                        src="https://app.powerbi.com/view?r=eyJrIjoiMmUyNmNlNTQtOGViYS00ZDA0LTg3M2UtZmFlOWJmMDEzZTIwIiwidCI6ImVhNjQ5ZTUwLTI3ZDItNDMxOC05Y2I5LTJmY2ZmZTE2ZmQ0MSIsImMiOjR9"
+                        allowFullScreen="true"
+                        onload="hideLoader()">
+                </iframe>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>
+            <i class="fas fa-chart-simple"></i> Dashboard interactivo con Power BI | 
+            Desarrollado con <i class="fas fa-heart" style="color: #ff6b6b;"></i> para análisis de datos
+        </p>
+    </footer>
+
+    <script>
+        // Ocultar loader cuando el iframe termina de cargar
+        function hideLoader() {
+            const loader = document.getElementById('loaderOverlay');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }
+        }
+
+        // Botón de pantalla completa
+        document.getElementById('fullscreenBtn')?.addEventListener('click', () => {
+            const iframe = document.getElementById('powerBiFrame');
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.webkitRequestFullscreen) {
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) {
+                iframe.msRequestFullscreen();
+            }
+        });
+
+        // Botón de refrescar
+        document.getElementById('refreshBtn')?.addEventListener('click', () => {
+            const iframe = document.getElementById('powerBiFrame');
+            const loader = document.getElementById('loaderOverlay');
+            
+            // Mostrar loader
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+            
+            // Recargar iframe
+            const currentSrc = iframe.src;
+            iframe.src = currentSrc;
+        });
+
+        // Timeout por si el iframe tarda mucho en cargar
+        setTimeout(() => {
+            const loader = document.getElementById('loaderOverlay');
+            if (loader && loader.style.display !== 'none') {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }
+        }, 8000);
+    </script>
 </body>
+</html>
 </html>
